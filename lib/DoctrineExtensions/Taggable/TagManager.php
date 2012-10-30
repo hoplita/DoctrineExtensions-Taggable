@@ -27,6 +27,8 @@ class TagManager
     protected $tagClass;
     protected $taggingClass;
 
+    protected $tagHydrator = "tag_hydrator"; 
+
     public function __construct(EntityManager $em, $tagClass = null, $taggingClass = null)
     {
         $this->em = $em;
@@ -120,7 +122,7 @@ class TagManager
             ->where($builder->expr()->in('t.name', $names))
 
             ->getQuery()
-            ->getResult()
+            ->getResult($this->tagHydrator)
         ;
 
         $loadedNames = array();
@@ -178,7 +180,7 @@ class TagManager
                     ->andWhere('t.resourceId = :resourceId')
                     ->setParameter('resourceId', $resource->getTaggableId())
                     ->getQuery()
-                    ->getResult()
+                    ->getResult($this->tagHydrator)
                 ;
             }
         }
@@ -224,7 +226,7 @@ class TagManager
             // ->orderBy('t.name', 'ASC')
 
             ->getQuery()
-            ->getResult()
+            ->getResult($this->tagHydrator)
         ;
     }
 
@@ -246,7 +248,7 @@ class TagManager
             ->setParameter('id', $resource->getTaggableId())
 
             ->getQuery()
-            ->getResult();
+            ->getResult($this->tagHydrator);
 
         foreach ($taggingList as $tagging) {
             $this->em->remove($tagging);
